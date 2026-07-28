@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IronMan Performance Dashboard</title>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="inicio.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <div class="brand-badge">ATHLETE DASHBOARD</div>
+            <h1>
+                <!-- Logo M-Dot do Ironman em SVG -->
+                <svg class="ironman-logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="18" r="12" />
+                    <path
+                        d="M 20 85 L 35 85 L 35 50 L 50 70 L 65 50 L 65 85 L 80 85 L 80 38 L 62 38 L 50 58 L 38 38 L 20 38 Z" />
+                </svg>
+                IRON<span>MAN</span>
+            </h1>
+            <p>Painel de Desempenho e Treinos</p>
+            
+            
+            <!-- Configurações PWA e Celular -->
+            <meta name="viewport"
+                content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <link rel="manifest" href="manifest.json" />
+            <meta name="theme-color" content="#E31837" />
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+            <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        </header>
+
+        <!-- Cards de Métricas Rápidas -->
+        <div class="stats-grid">
+            <div class="stat-card stat-run">
+                <i class="fa-solid fa-person-running"></i>
+                <h3>Corrida / Esteira</h3>
+                <div class="value" id="total-run">0.0 <span>km</span></div>
+            </div>
+            <div class="stat-card stat-swim">
+                <i class="fa-solid fa-person-swimming"></i>
+                <h3>Natação Total</h3>
+                <div class="value" id="total-swim">0.0 <span>km</span></div>
+            </div>
+            <div class="stat-card stat-calories">
+                <i class="fa-solid fa-fire-flame-curved"></i>
+                <h3>Gasto Estimado</h3>
+                <div class="value" id="total-calories">0 <span>kcal</span></div>
+            </div>
+        </div>
+
+        <!-- Checklist de Presença na Academia -->
+        <div class="section-card">
+            <div class="section-header">
+                <div>
+                    <h2><i class="fa-solid fa-calendar-check"></i> Frequência Semanal</h2>
+                    <span class="sub-header-text" id="gym-streak-text">Meta: 5 dias • Presença: 0/7</span>
+                </div>
+                <button class="reset-btn" onclick="resetGymDays()">
+                    <i class="fa-solid fa-rotate-left"></i> Resetar
+                </button>
+            </div>
+
+            <div class="gym-progress-wrapper">
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill gym-bar-fill" id="gym-progress-bar"></div>
+                </div>
+            </div>
+
+            <div class="week-days" id="week-days">
+                <button class="day-btn" id="day-0" onclick="toggleDay(0)">
+                    <span>DOM</span><i class="fa-solid fa-circle-check"></i>
+                </button>
+                <button class="day-btn" id="day-1" onclick="toggleDay(1)">
+                    <span>SEG</span><i class="fa-solid fa-circle-check"></i>
+                </button>
+                <button class="day-btn" id="day-2" onclick="toggleDay(2)">
+                    <span>TER</span><i class="fa-solid fa-circle-check"></i>
+                </button>
+                <button class="day-btn" id="day-3" onclick="toggleDay(3)">
+                    <span>QUA</span><i class="fa-solid fa-circle-check"></i>
+                </button>
+                <button class="day-btn" id="day-4" onclick="toggleDay(4)">
+                    <span>QUI</span><i class="fa-solid fa-circle-check"></i>
+                </button>
+                <button class="day-btn" id="day-5" onclick="toggleDay(5)">
+                    <span>SEX</span><i class="fa-solid fa-circle-check"></i>
+                </button>
+                <button class="day-btn" id="day-6" onclick="toggleDay(6)">
+                    <span>SÁB</span><i class="fa-solid fa-circle-check"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Progresso de Metas Mensais -->
+        <div class="section-card">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-bullseye"></i> Metas Mensais</h2>
+            </div>
+            <div class="goals-container">
+                <div class="goal-item">
+                    <div class="goal-info">
+                        <span class="goal-title"><i class="fa-solid fa-person-running"></i> Corrida (Meta: 50 km)</span>
+                        <span class="goal-values" id="goal-run-text">0 / 50 km (0%)</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill run-bar-fill" id="goal-run-bar"></div>
+                    </div>
+                </div>
+                <div class="goal-item">
+                    <div class="goal-info">
+                        <span class="goal-title"><i class="fa-solid fa-person-swimming"></i> Natação (Meta: 20
+                            km)</span>
+                        <span class="goal-values" id="goal-swim-text">0 / 20 km (0%)</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill swim-bar-fill" id="goal-swim-bar"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Registrar Atividade -->
+        <div class="section-card">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-plus-circle"></i> Registrar Novo Treino</h2>
+            </div>
+            <form id="activity-form">
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="type">Modalidade</label>
+                        <select id="type" required>
+                            <option value="run">Corrida / Esteira</option>
+                            <option value="swim">Natação</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="distance">Distância (km)</label>
+                        <input type="number" id="distance" step="0.01" placeholder="Ex: 5.5" required />
+                    </div>
+                    <div class="input-group">
+                        <label for="activity-date">Data do Treino</label>
+                        <input type="date" id="activity-date" required />
+                    </div>
+                </div>
+                <button type="submit"><i class="fa-solid fa-bolt"></i> Salvar Treino</button>
+            </form>
+        </div>
+
+        <!-- Gráfico de Desempenho -->
+        <div class="section-card">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-chart-column"></i> Volume Semanal (km)</h2>
+            </div>
+            <div class="chart-container">
+                <canvas id="weeklyChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Histórico de Treinos -->
+        <div class="section-card">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-clock-rotate-left"></i> Histórico Recente</h2>
+            </div>
+            <ul class="history-list" id="history-list"></ul>
+        </div>
+    </div>
+    <script src="inicio.js"></script>
+</body>
+
+</html>
