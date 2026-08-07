@@ -1,13 +1,37 @@
 const CALORIES_PER_KM = { run: 65, swim: 180 };
 const GOALS = { run: 50, swim: 20 };
-const WEEKLY_GYM_GOAL = 5; 
+const WEEKLY_GYM_GOAL = 5;
 
 let state = JSON.parse(localStorage.getItem('ironman_tracker_data')) || {
   activities: [],
-  gymDays: [false, false, false, false, false, false, false]
+  gymDays: [false, false, false, false, false, false, false],
+  lastResetWeek: null
 };
 
 let chartInstance = null;
+
+// --- RETORNA A DATA DO DOMINGO DA SEMANA ATUAL ---
+function getStartOfWeekIdentifier(d = new Date()) {
+  const date = new Date(d);
+  const day = date.getDay(); // 0 = Domingo
+
+  // Subtrai os dias decorridos até o domingo mais recente
+  const sunday = new Date(date.setDate(date.getDate() - day));
+
+  // Retorna no formato "AAAA-MM-DD"
+  return sunday.toISOString().split('T')[0];
+}
+
+// --- VERIFICA SE A SEMANA MUDOU E RESETA NO DOMINGO ---
+function checkWeeklyReset() {
+  const currentWeek = getStartOfWeekIdentifier();
+
+  if (!state.lastResetWeek || state.lastResetWeek !== currentWeek) {
+    state.gymDays = [false, false, false, false, false, false, false];
+    state.lastResetWeek = currentWeek;
+    saveData();
+  }
+}
 
 function saveData() {
   localStorage.setItem('ironman_tracker_data', JSON.stringify(state));
@@ -244,7 +268,7 @@ function render() {
       const li = document.createElement('li');
       const isSwim = act.type === 'swim';
       li.className = `history-item ${isSwim ? 'tag-swim' : ''}`;
-      
+
       const iconClass = isSwim ? 'fa-person-swimming' : 'fa-person-running';
       const label = isSwim ? 'Natação' : 'Corrida';
       const estCalories = Math.round(act.distance * CALORIES_PER_KM[act.type]);
@@ -285,3 +309,11 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+
+// INICIALIZAÇÃO
+document.addEventListener('DOMContentLoaded', () => {
+  checkWeeklyReset(); // <-- ADICIONE ESTA LINHA AQUI
+  initChart();
+  setDefaultDate(); // Preenche o campo com o dia de hoje
+  render();
+});
